@@ -9,7 +9,6 @@ import copy
 
 from .cleanup import replace_optional_parameters, cleanup
 
-logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("mcp")
 
 def make_strict_schema(schema: dict):
