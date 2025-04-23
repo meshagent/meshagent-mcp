@@ -37,20 +37,5 @@ class MCPToolkit(Toolkit):
             meshagent_tools.append(MCPTool(session=self._session, mcp_tool=tool))
 
         super().__init__(name=name, tools=meshagent_tools)
-
-    async def __aenter__(self) -> 'MCPToolkit':
-
-        try:
-
-            mcp_tools = await self._session.list_tools()
-           
-
-        return self
-    
-    async def __aexit__(self, exec_type, exec, tb):
-        await self._session_ctx.__aexit__(exec_type, exec, tb)
-        await self._ctx.__aexit__(exec_type, exec, tb)
-        return None
-
     
 
