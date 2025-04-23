@@ -17,7 +17,7 @@ def make_strict_schema(schema: dict):
 
 
 class MCPTool(Tool):
-    def __init__(self, *, session: mcp.ClientSession, mcp_tool: mcp.Tool):
+    def __init__(self, *, session: ClientSession, mcp_tool: mcp.Tool):
         self.mcp_tool = mcp_tool
         self.session = session
         input_schema = mcp_tool.inputSchema
@@ -29,28 +29,13 @@ class MCPTool(Tool):
         return result.model_dump_json()
 
 class MCPToolkit(Toolkit):
-    def __init__(self, *, name: str, url: str):
+    def __init__(self, *, name: str, session: ClientSession, tools: list[mcp.Tool]):
         
-        self._url = url
-        self._ctx = sse_client(self._url)
-        self._session = None
-        super().__init__(name=name, tools=[])
+        self._session = session
+        meshagent_tools = []
+        for tool in tools:
+            meshagent_tools.append(MCPTool(session=self._session, mcp_tool=tool))
 
-    async def __aenter__(self) -> 'MCPToolkit':        
-        read_stream, write_stream = await self._ctx.__aenter__()
-        self._session_ctx = ClientSession(read_stream=read_stream, write_stream=write_stream)
-        self._session = await self._session_ctx.__aenter__()
-
-        mcp_tools = await self._session.list_tools()
-        for tool in mcp_tools.tools:
-            self.tools.append(MCPTool(session=self._session, mcp_tool=tool))
-
-        return self
-    
-    async def __aexit__(self, exec_type, exec, tb):
-        await self._session_ctx.__aexit__(exec_type, exec, tb)
-        await self._ctx.__aexit__(exec_type, exec, tb)
-        return None
-
+        super().__init__(name=name, tools=meshagent_tools)
     
 
