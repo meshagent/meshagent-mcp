@@ -8,13 +8,13 @@ from mcp.client.session import ClientSession
 from mcp.client.sse import sse_client
 import copy
 
-from .cleanup import replace_optional_parameters, cleanup
+#from .cleanup import replace_optional_parameters, cleanup
 
 logger = logging.getLogger("mcp")
 
-def make_strict_schema(schema: dict):
-    cleanup(schema, True)
-    return schema
+#def make_strict_schema(schema: dict):
+#   cleanup(schema, True)
+#   return schema
 
 
 class MCPTool(Tool):
@@ -22,10 +22,11 @@ class MCPTool(Tool):
         self.mcp_tool = mcp_tool
         self.session = session
         input_schema = ensure_strict_json_schema(mcp_tool.inputSchema)
-        super().__init__(name=mcp_tool.name, input_schema=make_strict_schema(input_schema), title=mcp_tool.name, description=mcp_tool.description)
+        super().__init__(name=mcp_tool.name, input_schema=input_schema, title=mcp_tool.name, description=mcp_tool.description)
 
     async def execute(self, context, **kwargs):
-        arguments = replace_optional_parameters(copy.deepcopy(kwargs))      
+        arguments = kwargs
+        #arguments = replace_optional_parameters(copy.deepcopy(kwargs))      
         result = await self.session.call_tool(self.mcp_tool.name, arguments)
         return result.model_dump_json()
 
