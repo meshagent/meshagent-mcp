@@ -1,6 +1,7 @@
 
 import logging
 from meshagent.tools import Toolkit, Tool
+from meshagent.tools.strict_schema import ensure_strict_json_schema
 
 import mcp
 from mcp.client.session import ClientSession
@@ -20,7 +21,7 @@ class MCPTool(Tool):
     def __init__(self, *, session: ClientSession, mcp_tool: mcp.Tool):
         self.mcp_tool = mcp_tool
         self.session = session
-        input_schema = mcp_tool.inputSchema
+        input_schema = ensure_strict_json_schema(mcp_tool.inputSchema)
         super().__init__(name=mcp_tool.name, input_schema=make_strict_schema(input_schema), title=mcp_tool.name, description=mcp_tool.description)
 
     async def execute(self, context, **kwargs):
