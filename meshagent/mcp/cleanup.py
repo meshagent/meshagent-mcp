@@ -1,16 +1,14 @@
-
-
 _OPTIONAL_PROPERTIES = "optional_properties"
 
+
 def replace_optional_parameters(arguments: dict):
-    
     for p, pv in list(arguments.items()):
         if p == _OPTIONAL_PROPERTIES:
             for parameter in arguments[_OPTIONAL_PROPERTIES]:
                 for k, v in parameter.items():
                     if v != "":
                         arguments[k] = v
-            
+
             del arguments[_OPTIONAL_PROPERTIES]
 
         elif isinstance(pv, dict):
@@ -18,25 +16,25 @@ def replace_optional_parameters(arguments: dict):
 
     return arguments
 
+
 def cleanup(data: dict, root: bool):
     examples = None
 
     # rewrite refs to point to $defs since OpenAI requires them to be in $defs
     if "$ref" in data:
-        ref : str = data["$ref"]
+        ref: str = data["$ref"]
         data["$ref"] = ref.replace("/components/schemas", "/$defs")
-    
-     # move schemas to $defs since OpenAI requires them to be in $defs
+
+    # move schemas to $defs since OpenAI requires them to be in $defs
     if root:
         if "components" in data:
             components = data.pop("components")
             if "schemas" in components:
                 schemas = components.pop("schemas")
                 data["$defs"] = schemas
-    
+
     if "x-fal-order-properties" in data:
         data.pop("x-fal-order-properties")
-
 
     if "examples" in data:
         examples = data.pop("examples")
@@ -47,14 +45,11 @@ def cleanup(data: dict, root: bool):
         description = f"{description}. examples: {examples}"
         data["description"] = description
 
-
     if "properties" in data:
-
         optional_properties = []
         required = data.get("required", [])
 
-        for k,v in data["properties"].items():
-            
+        for k, v in data["properties"].items():
             description = ""
             if "description" in v:
                 description = v["description"]
@@ -94,7 +89,7 @@ def cleanup(data: dict, root: bool):
                 default = v.pop("default")
                 description = f"{description}. unless otherwise specified, this default value should be used: {default}"
                 v["description"] = description
-            
+
             if "examples" in data:
                 examples = data.pop("examples")
                 description = f"{description}. examples: {examples}"
@@ -105,38 +100,29 @@ def cleanup(data: dict, root: bool):
 
         if len(optional_properties) > 0:
             anyOf = []
-            optional_schema = {
-                "type" : "array",
-                "items" : {
-                    "anyOf" : anyOf
-                }
-            }
+            optional_schema = {"type": "array", "items": {"anyOf": anyOf}}
             for k in optional_properties:
-                anyOf.append({
-                    "type" : "object",
-                    "required" :  [ k ],
-                    "additionalProperties" : False,
-                    "properties" : { 
-                        k: data["properties"][k]
+                anyOf.append(
+                    {
+                        "type": "object",
+                        "required": [k],
+                        "additionalProperties": False,
+                        "properties": {k: data["properties"][k]},
                     }
-                })
+                )
                 del data["properties"][k]
-            
+
             data["properties"][_OPTIONAL_PROPERTIES] = optional_schema
 
         data["additionalProperties"] = False
-        data["required"] = list(data["properties"].keys())  
-
-    
-
+        data["required"] = list(data["properties"].keys())
 
     if "type" in data:
         if data["type"] == "object" and "properties" not in data:
             data["additionalProperties"] = False
             data["required"] = []
-                  
 
-    for k,v in data.items():
+    for k, v in data.items():
         if isinstance(v, dict):
             cleanup(v, False)
 
