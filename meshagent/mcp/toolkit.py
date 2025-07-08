@@ -5,8 +5,6 @@ from meshagent.tools.strict_schema import ensure_strict_json_schema
 
 import mcp
 from mcp.client.session import ClientSession
-from mcp.client.sse import sse_client
-import copy
 
 #from .cleanup import replace_optional_parameters, cleanup
 
