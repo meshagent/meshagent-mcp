@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "meshagent-mcp"
 description = "Computer Building Blocks for MCP"
-requires-python = ">=3.12"
+requires-python = ">=3.13"
 license = "Apache-2.0"
 keywords = []
 dependencies = [
