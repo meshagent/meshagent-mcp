@@ -12,9 +12,9 @@ dependencies = [
   "pytest~=8.4",
   "pytest-asyncio~=0.26",
   "mcp~=1.9",
-  "meshagent-api~=0.5.15",
-  "meshagent-agents~=0.5.15",
-  "meshagent-tools~=0.5.15"
+  "meshagent-api~=0.5.16",
+  "meshagent-agents~=0.5.16",
+  "meshagent-tools~=0.5.16"
 ]
 dynamic = ["version", "readme"]
 
