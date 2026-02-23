@@ -2,8 +2,8 @@ import logging
 from meshagent.tools import Toolkit, FunctionTool
 from meshagent.tools.strict_schema import ensure_strict_json_schema
 
-import mcp
 from mcp.client.session import ClientSession
+from mcp.types import Tool as MCPToolDescription
 
 # from .cleanup import replace_optional_parameters, cleanup
 
@@ -15,7 +15,7 @@ logger = logging.getLogger("mcp")
 
 
 class MCPTool(FunctionTool):
-    def __init__(self, *, session: ClientSession, mcp_tool: mcp.FunctionTool):
+    def __init__(self, *, session: ClientSession, mcp_tool: MCPToolDescription):
         self.mcp_tool = mcp_tool
         self.session = session
         input_schema = ensure_strict_json_schema(mcp_tool.inputSchema)
@@ -35,7 +35,7 @@ class MCPTool(FunctionTool):
 
 class MCPToolkit(Toolkit):
     def __init__(
-        self, *, name: str, session: ClientSession, tools: list[mcp.FunctionTool]
+        self, *, name: str, session: ClientSession, tools: list[MCPToolDescription]
     ):
         self._session = session
         meshagent_tools = []
